@@ -1,7 +1,9 @@
 package univ.bigdata.course;
 
+import univ.bigdata.course.movie.MovieReview;
 import univ.bigdata.course.providers.FileIOMoviesProvider;
 import univ.bigdata.course.providers.MoviesProvider;
+import java.util.ArrayList;
 
 import java.io.PrintStream;
 
@@ -14,7 +16,12 @@ public class MoviesReviewsQueryRunner {
 
         final PrintStream printer = null;
         try{
-            final MoviesProvider provider = new FileIOMoviesProvider();
+            final MoviesProvider provider = new FileIOMoviesProvider("C:\\Users\\vadim\\Documents\\Studies\\Big Data\\hw1\\Hadoopers\\hw1\\src\\main\\resources\\movies-sample.txt");
+            ArrayList<MovieReview> movieReviews = new ArrayList<MovieReview>();
+            while (provider.hasMovie()){
+                MovieReview movie = provider.getMovie();
+                movieReviews.add(0, movie);
+            }
             final IMoviesStorage storage = new MoviesStorage(provider);
 
             printer.println("Getting list of total movies average.");

@@ -1,8 +1,6 @@
 package univ.bigdata.course.movie;
 
 public class Movie {
-    //I'm Adam!!!!
-    // Do you see this???
     private String productId;
 
     private double score;
