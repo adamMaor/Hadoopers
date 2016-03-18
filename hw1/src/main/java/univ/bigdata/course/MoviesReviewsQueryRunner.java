@@ -4,7 +4,6 @@ import univ.bigdata.course.movie.MovieReview;
 import univ.bigdata.course.providers.FileIOMoviesProvider;
 import univ.bigdata.course.providers.MoviesProvider;
 
-import java.net.URL;
 import java.util.ArrayList;
 
 import java.io.PrintStream;
