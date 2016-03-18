@@ -9,15 +9,18 @@ import java.util.Date;
 
 public class FileIOMoviesProvider implements MoviesProvider {
     private final LineNumberReader lineNumberReader;
-    private int nextLineNumber;
+    // flag to tell if we've read the current line
+    private boolean readLineFlag;
+    // the line most recently read from file
+    private String currentLine;
     /**
      * Constructor function for FileIOMoviesProvider
      * @param inputFileStr the input file
      */
     public FileIOMoviesProvider(String inputFileStr) {
+        readLineFlag = false;
         try{
             lineNumberReader = new LineNumberReader(new FileReader(inputFileStr));
-            nextLineNumber = lineNumberReader.getLineNumber();
         } catch (Exception e){
             throw new RuntimeException("File open error");
         }
@@ -25,8 +28,10 @@ public class FileIOMoviesProvider implements MoviesProvider {
 
     @Override
     public boolean hasMovie() {
-        String line = readLine();
-        if (line.equals("")){
+        if (!readLineFlag) {
+            readNextLine();
+        }
+        if (currentLine == null){
             try{
                 lineNumberReader.close();
             } catch (Exception e){
@@ -41,8 +46,12 @@ public class FileIOMoviesProvider implements MoviesProvider {
 
     @Override
     public MovieReview getMovie() {
-        String[] reviewParamsList = readLine().split("\t");
-        nextLineNumber++;
+        if (!readLineFlag) {
+            readNextLine();
+        }
+        // We've finished reading the next currentLine, reader can continue
+        readLineFlag = false;
+        String[] reviewParamsList = currentLine.split("\t");
         for (int i = 0; i < reviewParamsList.length; i++){
             reviewParamsList[i] = reviewParamsList[i].substring(reviewParamsList[i].lastIndexOf(":") + 2);
         }
@@ -58,17 +67,15 @@ public class FileIOMoviesProvider implements MoviesProvider {
     }
 
     /**
-     * read the nextLineNumber line from LineNumberReader
-     * @return String of next line
+     * read the nextLineNumber currentLine from LineNumberReader
      */
-    private String readLine(){
-        String line;
-        lineNumberReader.setLineNumber(nextLineNumber);
+    private void readNextLine(){
         try {
-            line = lineNumberReader.readLine();
+            currentLine = lineNumberReader.readLine();
+            // We've read the current currentLine, reader should not continue reading until getMovie has been called
+            readLineFlag = true;
         } catch (Exception e){
-            throw new RuntimeException("Can't read line");
+            throw new RuntimeException("Can't read current currentLine");
         }
-        return line;
     }
 }
