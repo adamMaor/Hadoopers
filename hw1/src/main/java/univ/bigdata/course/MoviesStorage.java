@@ -21,9 +21,13 @@ import java.util.*;
  */
 public class MoviesStorage implements IMoviesStorage {
 
-    HashMap <String, ArrayList<MovieReview>> reviewList;
+    private HashMap <String, ArrayList<MovieReview>> reviewList;
 
-    public MoviesStorage(final MoviesProvider provider) {
+    public HashMap<String, ArrayList<MovieReview>> getReviewList() {
+		return reviewList;
+	}
+
+	public MoviesStorage(final MoviesProvider provider) {
         this.reviewList = new HashMap<String, ArrayList<MovieReview>>();
         while (provider.hasMovie()) {
             MovieReview res = provider.getMovie();

@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 import java.io.PrintStream;
+import tests.Test;
 
 public class MoviesReviewsQueryRunner {
 
@@ -20,12 +21,20 @@ public class MoviesReviewsQueryRunner {
         final PrintStream printer = new PrintStream((OutputStream)(System.out));
         try{
             final MoviesProvider provider = new FileIOMoviesProvider(".\\hw1\\src\\main\\resources\\movies-sample.txt");
+              //final MoviesProvider provider = new FileIOMoviesProvider("..\\hw1\\src\\main\\resources\\movies-sample.txt");
+
+            
+            
             /*ArrayList<MovieReview> movieReviews = new ArrayList<MovieReview>();
             while (provider.hasMovie()){
                 MovieReview movie = provider.getMovie();
                 movieReviews.add(0, movie);
             }*/
             final IMoviesStorage storage = new MoviesStorage(provider);
+            
+            Test t = new Test(storage);
+            t.checkFunction2point2();
+            
             printer.println("Getting list of total movies average.");
             // 1.
             printer.println();
