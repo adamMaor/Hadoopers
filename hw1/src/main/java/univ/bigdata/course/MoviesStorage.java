@@ -5,6 +5,9 @@ import univ.bigdata.course.movie.MovieReview;
 import univ.bigdata.course.providers.MoviesProvider;
 
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Stream;
+
 import static java.lang.Math.toIntExact;
 
 
@@ -25,16 +28,21 @@ public class MoviesStorage implements IMoviesStorage {
     // Hashmap of movies, key is movie and value is a list of movie reviews for that movie
     private HashMap <String, ArrayList<MovieReview>> reviewList;
     // Map with key movieId and value of number of reviews for that movie
-    Map<String, Long> movieReviewCounts;
     private List<Movie> moviesSortedByScore;
-    public HashMap<String, ArrayList<MovieReview>> getReviewList() {
+    private Map<String, Long> moviesSortedByNumOfReviews; 
+    
+    public Map<String, Long> getMoviesSortedByNumOfReviews() {
+		return moviesSortedByNumOfReviews;
+	}
+
+	public HashMap<String, ArrayList<MovieReview>> getReviewList() {
 		return reviewList;
 	}
 
 	public MoviesStorage(final MoviesProvider provider) {
         this.reviewList = new HashMap<>();
         this.moviesSortedByScore = new ArrayList<>();
-        this.movieReviewCounts = new LinkedHashMap<>();
+        this.moviesSortedByNumOfReviews = new LinkedHashMap<>();
         while (provider.hasMovie()) {
             MovieReview review = provider.getMovie();
             if (!reviewList.containsKey(review.getMovie().getProductId())){
@@ -106,12 +114,21 @@ public class MoviesStorage implements IMoviesStorage {
 
     @Override
     public String mostReviewedProduct() {
-        throw new UnsupportedOperationException("You have to implement this method on your own.");
+    	if (moviesSortedByNumOfReviews.isEmpty()){
+    		populateMovieReviewCounts();
+        }
+
+        return (String) moviesSortedByNumOfReviews.keySet().toArray()[0]; 	
     }
 
     @Override
     public Map<String, Long> reviewCountPerMovieTopKMovies(int topK) {
-        throw new UnsupportedOperationException("You have to implement this method on your own.");
+    	Map<String, Long> topKMoviesSortedByNumOfReviews = new LinkedHashMap<>();
+    	if (moviesSortedByNumOfReviews.isEmpty()){
+    		populateMovieReviewCounts();
+        }
+    	// TODO retrun top K from the original Map to topK map
+    	return topKMoviesSortedByNumOfReviews;
     }
 
     @Override
@@ -149,7 +166,14 @@ public class MoviesStorage implements IMoviesStorage {
         Collections.sort(moviesSortedByScore);
         Collections.reverse(moviesSortedByScore);
     }
+    
+    // method for populating the map of product id(of a movie) and the number of reviews of the movie
     private void populateMovieReviewCounts() {
-        // TODO
+        for (Map.Entry<String, ArrayList<MovieReview>> entry : reviewList.entrySet()){
+        	moviesSortedByNumOfReviews.put(entry.getKey(), (long)entry.getValue().size() );
+        } 
+        /*TODO sort the Map by #(reviews) and by lex' order*/
     }
+    
+    
 }

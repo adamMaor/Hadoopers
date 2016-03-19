@@ -32,6 +32,7 @@ public class MoviesReviewsQueryRunner {
             movies = storage.getMoviesPercentile(4);
             Test t = new Test(storage);
             t.checkFunction2point2();
+            t.checkFunction2point6();
             
             printer.println("Getting list of total movies average.");
             // 1.
