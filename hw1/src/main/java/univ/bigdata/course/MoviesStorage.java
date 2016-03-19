@@ -1,10 +1,10 @@
 package univ.bigdata.course;
 
 import univ.bigdata.course.movie.Movie;
+import univ.bigdata.course.movie.MovieReview;
 import univ.bigdata.course.providers.MoviesProvider;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Main class which capable to keep all information regarding movies review.
@@ -21,19 +21,46 @@ import java.util.Map;
  */
 public class MoviesStorage implements IMoviesStorage {
 
+    HashMap <String, ArrayList<MovieReview>> reviewList;
+
     public MoviesStorage(final MoviesProvider provider) {
-        //TODO: read movies using provider interface
-        throw new UnsupportedOperationException("You have to implement this method on your own.");
+        this.reviewList = new HashMap<String, ArrayList<MovieReview>>();
+        while (provider.hasMovie()) {
+            MovieReview res = provider.getMovie();
+            if (!reviewList.containsKey(res.getMovie().getProductId())){
+                ArrayList<MovieReview> l = new ArrayList<MovieReview>();
+                l.add(res);
+                reviewList.put(res.getMovie().getProductId(), l);
+            }
+            else {
+                reviewList.get(res.getMovie().getProductId()).add(res);
+            }
+        }
     }
 
     @Override
     public double totalMoviesAverageScore() {
-        throw new UnsupportedOperationException("You have to implement this method on your own.");
+        int count = 0, sum = 0;
+        Set <String> movies = reviewList.keySet();
+        for (String movieId : movies){
+            ArrayList <MovieReview> reviews = reviewList.get(movieId);
+            for (MovieReview review : reviews){
+                sum += review.getMovie().getScore();
+                count++;
+            }
+        }
+        return (double)sum/count;
     }
 
     @Override
     public double totalMovieAverage(String productId) {
-        throw new UnsupportedOperationException("You have to implement this method on your own.");
+        int count = 0, sum = 0;
+        ArrayList <MovieReview> list = reviewList.get(productId);
+        for (MovieReview review : list){
+            sum += review.getMovie().getScore();
+            count++;
+        }
+        return (double)sum/count;
     }
 
     @Override
