@@ -5,6 +5,8 @@ import univ.bigdata.course.movie.MovieReview;
 import univ.bigdata.course.providers.MoviesProvider;
 
 import java.util.*;
+import static java.lang.Math.toIntExact;
+
 
 /**
  * Main class which capable to keep all information regarding movies review.
@@ -20,24 +22,26 @@ import java.util.*;
  * 7. K most helpful users
  */
 public class MoviesStorage implements IMoviesStorage {
-
+    // Hashmap of movies, key is movie and value is a list of movie reviews for that movie
     private HashMap <String, ArrayList<MovieReview>> reviewList;
-
+    Map<String , Long>
+    private List<Movie> moviesSortedByScore;
     public HashMap<String, ArrayList<MovieReview>> getReviewList() {
 		return reviewList;
 	}
 
 	public MoviesStorage(final MoviesProvider provider) {
-        this.reviewList = new HashMap<String, ArrayList<MovieReview>>();
+        this.reviewList = new HashMap<>();
+        this.moviesSortedByScore = new ArrayList<>();
         while (provider.hasMovie()) {
-            MovieReview res = provider.getMovie();
-            if (!reviewList.containsKey(res.getMovie().getProductId())){
-                ArrayList<MovieReview> l = new ArrayList<MovieReview>();
-                l.add(res);
-                reviewList.put(res.getMovie().getProductId(), l);
+            MovieReview review = provider.getMovie();
+            if (!reviewList.containsKey(review.getMovie().getProductId())){
+                ArrayList<MovieReview> movieReviewList = new ArrayList<>();
+                movieReviewList.add(review);
+                reviewList.put(review.getMovie().getProductId(), movieReviewList);
             }
             else {
-                reviewList.get(res.getMovie().getProductId()).add(res);
+                reviewList.get(review.getMovie().getProductId()).add(review);
             }
         }
     }
@@ -69,17 +73,33 @@ public class MoviesStorage implements IMoviesStorage {
 
     @Override
     public List<Movie> getTopKMoviesAverage(long topK) {
-        throw new UnsupportedOperationException("You have to implement this method on your own.");
+        if (moviesSortedByScore.isEmpty()){
+            populateMoviesSortedByScore();
+        }
+        return moviesSortedByScore.subList(0, toIntExact(topK));
     }
 
     @Override
     public Movie movieWithHighestAverage() {
-        throw new UnsupportedOperationException("You have to implement this method on your own.");
+        if (moviesSortedByScore.isEmpty()){
+            populateMoviesSortedByScore();
+        }
+        return moviesSortedByScore.get(0);
     }
 
     @Override
     public List<Movie> getMoviesPercentile(double percentile) {
-        throw new UnsupportedOperationException("You have to implement this method on your own.");
+        List<Movie> moviesPercentile = new ArrayList<>();
+        if (moviesSortedByScore.isEmpty()){
+            populateMoviesSortedByScore();
+        }
+        for (Movie movie : moviesSortedByScore){
+            if (movie.getScore() < percentile){
+                break;
+            }
+            moviesPercentile.add(movie);
+        }
+        return moviesPercentile;
     }
 
     @Override
@@ -115,5 +135,16 @@ public class MoviesStorage implements IMoviesStorage {
     @Override
     public long moviesCount() {
         throw new UnsupportedOperationException("You have to implement this method on your own.");
+    }
+
+    // method for populating the array of movies sorted by their score
+    private void populateMoviesSortedByScore() {
+        Set <String> movies = reviewList.keySet();
+        for (String movieId : movies){
+            Movie movie = new Movie(movieId, totalMovieAverage(movieId));
+            moviesSortedByScore.add(movie);
+        }
+        Collections.sort(moviesSortedByScore);
+        Collections.reverse(moviesSortedByScore);
     }
 }

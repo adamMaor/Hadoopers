@@ -1,5 +1,6 @@
 package univ.bigdata.course;
 
+import univ.bigdata.course.movie.Movie;
 import univ.bigdata.course.movie.MovieReview;
 import univ.bigdata.course.providers.FileIOMoviesProvider;
 import univ.bigdata.course.providers.MoviesProvider;
@@ -8,6 +9,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 import java.io.PrintStream;
+import java.util.List;
+
 import tests.Test;
 
 public class MoviesReviewsQueryRunner {
@@ -21,17 +24,12 @@ public class MoviesReviewsQueryRunner {
         final PrintStream printer = new PrintStream((OutputStream)(System.out));
         try{
             final MoviesProvider provider = new FileIOMoviesProvider(".\\hw1\\src\\main\\resources\\movies-sample.txt");
-              //final MoviesProvider provider = new FileIOMoviesProvider("..\\hw1\\src\\main\\resources\\movies-sample.txt");
-
-            
-            
-            /*ArrayList<MovieReview> movieReviews = new ArrayList<MovieReview>();
-            while (provider.hasMovie()){
-                MovieReview movie = provider.getMovie();
-                movieReviews.add(0, movie);
-            }*/
             final IMoviesStorage storage = new MoviesStorage(provider);
-            
+            List<Movie> movies = new ArrayList<>();
+            // test getTopKMoviesAverage
+            movies = storage.getTopKMoviesAverage(2);
+            // test getMoviesPercentile
+            movies = storage.getMoviesPercentile(4);
             Test t = new Test(storage);
             t.checkFunction2point2();
             
@@ -52,6 +50,7 @@ public class MoviesReviewsQueryRunner {
             printer.println("The movie with highest average:  " + storage.movieWithHighestAverage());
 
             // 4.
+
             printer.println();
             storage.reviewCountPerMovieTopKMovies(4)
                     .entrySet()

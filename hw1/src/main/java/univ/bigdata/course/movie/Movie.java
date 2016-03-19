@@ -1,6 +1,6 @@
 package univ.bigdata.course.movie;
 
-public class Movie {
+public class Movie implements Comparable<Movie> {
     private String productId;
 
     private double score;
@@ -37,4 +37,13 @@ public class Movie {
                 '}';
     }
 
+    @Override
+    public int compareTo(Movie movie) {
+        if (this.score == movie.score){
+            return this.productId.compareTo(movie.productId);
+        }
+        else {
+            return this.score > movie.score ? 1 : -1;
+        }
+    }
 }
