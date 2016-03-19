@@ -24,7 +24,6 @@ import static java.lang.Math.toIntExact;
 public class MoviesStorage implements IMoviesStorage {
     // Hashmap of movies, key is movie and value is a list of movie reviews for that movie
     private HashMap <String, ArrayList<MovieReview>> reviewList;
-    Map<String , Long>
     private List<Movie> moviesSortedByScore;
     public HashMap<String, ArrayList<MovieReview>> getReviewList() {
 		return reviewList;
