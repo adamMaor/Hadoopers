@@ -24,6 +24,8 @@ import static java.lang.Math.toIntExact;
 public class MoviesStorage implements IMoviesStorage {
     // Hashmap of movies, key is movie and value is a list of movie reviews for that movie
     private HashMap <String, ArrayList<MovieReview>> reviewList;
+    // Map with key movieId and value of number of reviews for that movie
+    Map<String, Long> movieReviewCounts;
     private List<Movie> moviesSortedByScore;
     public HashMap<String, ArrayList<MovieReview>> getReviewList() {
 		return reviewList;
@@ -32,6 +34,7 @@ public class MoviesStorage implements IMoviesStorage {
 	public MoviesStorage(final MoviesProvider provider) {
         this.reviewList = new HashMap<>();
         this.moviesSortedByScore = new ArrayList<>();
+        this.movieReviewCounts = new LinkedHashMap<>();
         while (provider.hasMovie()) {
             MovieReview review = provider.getMovie();
             if (!reviewList.containsKey(review.getMovie().getProductId())){
@@ -138,12 +141,15 @@ public class MoviesStorage implements IMoviesStorage {
 
     // method for populating the array of movies sorted by their score
     private void populateMoviesSortedByScore() {
-        Set <String> movies = reviewList.keySet();
+        Set<String> movies = reviewList.keySet();
         for (String movieId : movies){
             Movie movie = new Movie(movieId, totalMovieAverage(movieId));
             moviesSortedByScore.add(movie);
         }
         Collections.sort(moviesSortedByScore);
         Collections.reverse(moviesSortedByScore);
+    }
+    private void populateMovieReviewCounts() {
+        // TODO
     }
 }
