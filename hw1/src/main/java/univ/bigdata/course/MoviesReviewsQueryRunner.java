@@ -4,6 +4,7 @@ import univ.bigdata.course.movie.MovieReview;
 import univ.bigdata.course.providers.FileIOMoviesProvider;
 import univ.bigdata.course.providers.MoviesProvider;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import java.io.PrintStream;
@@ -15,16 +16,16 @@ public class MoviesReviewsQueryRunner {
         //TODO: Here you need to add the part of reading input parameters
         // opening stream for writing the output and validating.
 
-        final PrintStream printer = null;
+        /*TO CHANGE : use args[2] as out stream !!!*/
+        final PrintStream printer = new PrintStream((OutputStream)(System.out));
         try{
             final MoviesProvider provider = new FileIOMoviesProvider(".\\hw1\\src\\main\\resources\\movies-sample.txt");
-            ArrayList<MovieReview> movieReviews = new ArrayList<MovieReview>();
+            /*ArrayList<MovieReview> movieReviews = new ArrayList<MovieReview>();
             while (provider.hasMovie()){
                 MovieReview movie = provider.getMovie();
                 movieReviews.add(0, movie);
-            }
+            }*/
             final IMoviesStorage storage = new MoviesStorage(provider);
-
             printer.println("Getting list of total movies average.");
             // 1.
             printer.println();
