@@ -53,7 +53,7 @@ public class FileIOMoviesProvider implements MoviesProvider {
         readLineFlag = false;
         String[] reviewParamsList = currentLine.split("\\t");
         for (int i = 0; i < reviewParamsList.length; i++){
-            reviewParamsList[i] = reviewParamsList[i].substring(reviewParamsList[i].lastIndexOf(":") + 2);
+            reviewParamsList[i] = reviewParamsList[i].substring(reviewParamsList[i].indexOf(":") + 2);
         }
         Movie movie = new Movie(reviewParamsList[0], Double.parseDouble(reviewParamsList[4]));
         Date movieDate = new Date(Long.parseLong(reviewParamsList[5]));
