@@ -26,7 +26,7 @@ import static java.lang.Math.toIntExact;
 public class MoviesStorage implements IMoviesStorage {
     // Hashmap of movies, key is movie and value is a list of movie reviews for that movie
     // TODO(vak): change name to reviewMap
-    private Map <String, ArrayList<MovieReview>> reviewMap;
+    private Map <String, ArrayList<MovieReview>> reviewList;
     // Map with key movieId and value of number of reviews for that movie
     private List<Movie> moviesSortedByScore;
     private Map<String, Long> moviesSortedByNumOfReviews;
@@ -35,23 +35,23 @@ public class MoviesStorage implements IMoviesStorage {
 		return moviesSortedByNumOfReviews;
 	}
 
-	public Map<String, ArrayList<MovieReview>> getReviewMap() {
-		return reviewMap;
+	public Map<String, ArrayList<MovieReview>> getReviewList() {
+		return reviewList;
 	}
 
 	public MoviesStorage(final MoviesProvider provider) {
-        this.reviewMap = new HashMap<>();
+        this.reviewList = new HashMap<>();
         this.moviesSortedByScore = new ArrayList<>();
         this.moviesSortedByNumOfReviews = new LinkedHashMap<>();
         while (provider.hasMovie()) {
             MovieReview review = provider.getMovie();
-            if (!reviewMap.containsKey(review.getMovie().getProductId())){
+            if (!reviewList.containsKey(review.getMovie().getProductId())){
                 ArrayList<MovieReview> movieReviewList = new ArrayList<>();
                 movieReviewList.add(review);
-                reviewMap.put(review.getMovie().getProductId(), movieReviewList);
+                reviewList.put(review.getMovie().getProductId(), movieReviewList);
             }
             else {
-                reviewMap.get(review.getMovie().getProductId()).add(review);
+                reviewList.get(review.getMovie().getProductId()).add(review);
             }
         }
     }
@@ -60,9 +60,9 @@ public class MoviesStorage implements IMoviesStorage {
     @Override
     public double totalMoviesAverageScore() {
         int count = 0, sum = 0;
-        Set <String> movies = reviewMap.keySet();
+        Set <String> movies = reviewList.keySet();
         for (String movieId : movies){
-            ArrayList <MovieReview> reviews = reviewMap.get(movieId);
+            ArrayList <MovieReview> reviews = reviewList.get(movieId);
             for (MovieReview review : reviews){
                 sum += review.getMovie().getScore();
                 count++;
@@ -74,7 +74,7 @@ public class MoviesStorage implements IMoviesStorage {
     @Override
     public double totalMovieAverage(String productId) {
         int count = 0, sum = 0;
-        ArrayList <MovieReview> list = reviewMap.get(productId);
+        ArrayList <MovieReview> list = reviewList.get(productId);
         for (MovieReview review : list){
             sum += review.getMovie().getScore();
             count++;
@@ -137,7 +137,7 @@ public class MoviesStorage implements IMoviesStorage {
         }
         for (Movie movie : moviesSortedByScore){
             String productID = movie.getProductId();
-            if(reviewMap.get(productID).size() >= numOfUsers){
+            if(reviewList.get(productID).size() >= numOfUsers){
                 return  productID;
             }
         }
@@ -148,7 +148,7 @@ public class MoviesStorage implements IMoviesStorage {
     @Override
     public Map<String, Long> moviesReviewWordsCount(int topK) {
         Map<String, Long> wordsCountMap = new HashMap<>();
-        for (Map.Entry<String, ArrayList<MovieReview>> entry : reviewMap.entrySet()){
+        for (Map.Entry<String, ArrayList<MovieReview>> entry : reviewList.entrySet()){
             //moviesSortedByNumOfReviews.put(entry.getKey(), (long)entry.getValue().size() );
             for(MovieReview review: entry.getValue()){
                 String[] words = review.getSummary().split(" ");
@@ -180,16 +180,16 @@ public class MoviesStorage implements IMoviesStorage {
     @Override
     public Map<String, Long> topYMoviewsReviewTopXWordsCount(int topMovies, int topWords) {
         Map<String, Long> topYMoviesReviewCountMap = reviewCountPerMovieTopKMovies(topMovies);
-        HashMap<String, ArrayList<MovieReview>> topYMovieMap = new LinkedHashMap<>();
+        HashMap<String, ArrayList<MovieReview>> topYMovieMap = new HashMap<>();
         for(String key : topYMoviesReviewCountMap.keySet())
         {
-            topYMovieMap.putIfAbsent(key, reviewMap.get(key));
+            topYMovieMap.putIfAbsent(key, reviewList.get(key));
         }
         return countWordsInGivenMovies(topYMovieMap, topWords);
     }
 
     private Map<String,Long> countWordsInGivenMovies(HashMap<String, ArrayList<MovieReview>> movieMap, int k) {
-        Map<String, Long> wordsCountMap = new LinkedHashMap<>();
+        Map<String, Long> wordsCountMap = new HashMap<>();
         for (Map.Entry<String, ArrayList<MovieReview>> entry : movieMap.entrySet()){
             for(MovieReview review: entry.getValue()){
                 String[] words = review.getSummary().split(" ");
@@ -222,18 +222,17 @@ public class MoviesStorage implements IMoviesStorage {
 
     @Override
     public Map<String, Double> topKHelpfullUsers(int k) {
-        Map<String, Double> topKHelpfulUsers = new LinkedHashMap<>();
-        return topKHelpfulUsers;
+        throw new UnsupportedOperationException("You have to implement this method on your own.");
     }
 
     @Override
     public long moviesCount() {
-        return reviewMap.size();
+        throw new UnsupportedOperationException("You have to implement this method on your own.");
     }
 
     // method for populating the array of movies sorted by their score
     private void populateMoviesSortedByScore() {
-        Set<String> movies = reviewMap.keySet();
+        Set<String> movies = reviewList.keySet();
         for (String movieId : movies){
             Movie movie = new Movie(movieId, totalMovieAverage(movieId));
             moviesSortedByScore.add(movie);
@@ -245,7 +244,7 @@ public class MoviesStorage implements IMoviesStorage {
     // method for populating the map of product id(of a movie) and the number of reviews of the movie
     private void populateMovieReviewCounts() {
         Map<String, Long> unsortedMovieReviewCountsMap = new LinkedHashMap<>();
-        for (Map.Entry<String, ArrayList<MovieReview>> entry : reviewMap.entrySet()) {
+        for (Map.Entry<String, ArrayList<MovieReview>> entry : reviewList.entrySet()) {
             unsortedMovieReviewCountsMap.put(entry.getKey(), (long)entry.getValue().size());
         }
         moviesSortedByNumOfReviews = sortMapByValueAndKey(unsortedMovieReviewCountsMap);

@@ -25,7 +25,11 @@ public class MoviesReviewsQueryRunner {
         try{
             final MoviesProvider provider = new FileIOMoviesProvider(".\\hw1\\src\\main\\resources\\movies-sample.txt");
             final IMoviesStorage storage = new MoviesStorage(provider);
-
+            List<Movie> movies = new ArrayList<>();
+            // test getTopKMoviesAverage
+            movies = storage.getTopKMoviesAverage(2);
+            // test getMoviesPercentile
+            movies = storage.getMoviesPercentile(4);
 
             printer.println("Getting list of total movies average.");
             // 1.
