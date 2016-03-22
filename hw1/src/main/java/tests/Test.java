@@ -13,11 +13,7 @@ public class Test {
 	
 	private MoviesStorage storage;
 	private HashMap <String, ArrayList<MovieReview>> reviewList;
-	
-	public Test(IMoviesStorage iStorageFromMain){
-		storage = (MoviesStorage) iStorageFromMain;
-		reviewList = storage.getReviewList();
-	}
+
 	
 	public void checkFunction2point2(){
 		Set <String> movies = reviewList.keySet();
