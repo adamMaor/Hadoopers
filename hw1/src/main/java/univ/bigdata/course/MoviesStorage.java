@@ -56,6 +56,7 @@ public class MoviesStorage implements IMoviesStorage {
         }
     }
 
+
     @Override
     public double totalMoviesAverageScore() {
         int count = 0, sum = 0;
@@ -131,20 +132,96 @@ public class MoviesStorage implements IMoviesStorage {
     	return topKMoviesSortedByNumOfReviews;
     }
 
+    //2.8
     @Override
     public String mostPopularMovieReviewedByKUsers(int numOfUsers) {
-        throw new UnsupportedOperationException("You have to implement this method on your own.");
+        if (moviesSortedByScore.isEmpty()){
+            populateMoviesSortedByScore();
+        }
+        for (Movie movie : moviesSortedByScore){
+            String productID = movie.getProductId();
+            if(reviewList.get(productID).size() >= numOfUsers){
+                return  productID;
+            }
+        }
+        return ""; //no such movie with at least numOfUsers user reviews
     }
 
+    //2.9
     @Override
     public Map<String, Long> moviesReviewWordsCount(int topK) {
-        throw new UnsupportedOperationException("You have to implement this method on your own.");
+        Map<String, Long> wordsCountMap = new HashMap<>();
+        for (Map.Entry<String, ArrayList<MovieReview>> entry : reviewList.entrySet()){
+            //moviesSortedByNumOfReviews.put(entry.getKey(), (long)entry.getValue().size() );
+            for(MovieReview review: entry.getValue()){
+                String[] words = review.getSummary().split(" ");
+                for(int i=0; i<words.length;i++){
+                    words[i] = words[i].replaceAll("[\"]","");
+                    wordsCountMap.putIfAbsent(words[i], (long) 0);
+                    wordsCountMap.put(words[i], wordsCountMap.get(words[i]) + 1);
+                }
+                /*words = review.getReview().split(" ");
+                for(int i=0; i<words.length;i++){
+                    words[i] = words[i].replaceAll("[\"]","");
+                    wordsCountMap.putIfAbsent(words[i], (long) 0);
+                    wordsCountMap.put(words[i], wordsCountMap.get(words[i]) + 1);
+                }*/
+            }
+        }
+        Map<String, Long> topKWordsSortedByCount = new LinkedHashMap<>();
+        Iterator<Entry<String, Long>> iterator = wordsCountMap.entrySet().iterator();
+        for (int i = 0 ; i < topK ; i++){
+            if (iterator.hasNext()){
+                Entry<String, Long> currEntry = iterator.next();
+                topKWordsSortedByCount.put(currEntry.getKey(), currEntry.getValue());
+            }
+        }
+        //System.out.println(wordsCountMap.get("the"));
+        return topKWordsSortedByCount;
     }
 
     @Override
     public Map<String, Long> topYMoviewsReviewTopXWordsCount(int topMovies, int topWords) {
-        throw new UnsupportedOperationException("You have to implement this method on your own.");
+        Map<String, Long> topYMoviesReviewCountMap = reviewCountPerMovieTopKMovies(topMovies);
+        HashMap<String, ArrayList<MovieReview>> topYMovieMap = new HashMap<>();
+        for(String key : topYMoviesReviewCountMap.keySet())
+        {
+            topYMovieMap.putIfAbsent(key, reviewList.get(key));
+        }
+        return countWordsInGivenMovies(topYMovieMap, topWords);
     }
+
+    private Map<String,Long> countWordsInGivenMovies(HashMap<String, ArrayList<MovieReview>> movieMap, int k) {
+        Map<String, Long> wordsCountMap = new HashMap<>();
+        for (Map.Entry<String, ArrayList<MovieReview>> entry : movieMap.entrySet()){
+            for(MovieReview review: entry.getValue()){
+                String[] words = review.getSummary().split(" ");
+                for(int i=0; i<words.length;i++){
+                    words[i] = words[i].replaceAll("[\"]","");
+                    wordsCountMap.putIfAbsent(words[i], (long) 0);
+                    wordsCountMap.put(words[i], wordsCountMap.get(words[i]) + 1);
+                }
+                /*words = review.getReview().split(" ");
+                for(int i=0; i<words.length;i++){
+                    words[i] = words[i].replaceAll("[\"]","");
+                    wordsCountMap.putIfAbsent(words[i], (long) 0);
+                    wordsCountMap.put(words[i], wordsCountMap.get(words[i]) + 1);
+                }*/
+            }
+        }
+        Map<String, Long> topKWordsSortedByCount = new LinkedHashMap<>();//TODO sorting
+        Iterator<Entry<String, Long>> iterator = wordsCountMap.entrySet().iterator();
+        for (int i = 0 ; i < k ; i++){
+            if (iterator.hasNext()){
+                Entry<String, Long> currEntry = iterator.next();
+                topKWordsSortedByCount.put(currEntry.getKey(), currEntry.getValue());
+            }
+        }
+        //System.out.println(wordsCountMap.get("the"));
+        return topKWordsSortedByCount;
+    }
+
+
 
     @Override
     public Map<String, Double> topKHelpfullUsers(int k) {
