@@ -25,7 +25,6 @@ import static java.lang.Math.toIntExact;
  */
 public class MoviesStorage implements IMoviesStorage {
     // Hashmap of movies, key is movie and value is a list of movie reviews for that movie
-    // TODO(vak): change name to reviewMap
     private Map <String, ArrayList<MovieReview>> reviewMap;
     // Map with key movieId and value of number of reviews for that movie
     private List<Movie> moviesSortedByScore;
@@ -118,15 +117,7 @@ public class MoviesStorage implements IMoviesStorage {
     	if (moviesSortedByNumOfReviews.isEmpty()){
             populateMovieReviewCounts();
         }
-        Map<String, Long> topKMoviesSortedByNumOfReviews = new LinkedHashMap<>();
-        Iterator<Entry<String, Long>> iterator = moviesSortedByNumOfReviews.entrySet().iterator();
-        for (int i = 0 ; i < topK ; i++){
-            if (iterator.hasNext()){
-                Entry<String, Long> currEntry = iterator.next();
-                topKMoviesSortedByNumOfReviews.put(currEntry.getKey(), currEntry.getValue());
-            }
-        }
-    	return topKMoviesSortedByNumOfReviews;
+        return getKElementsFromMap(moviesSortedByNumOfReviews, topK);
     }
 
     //2.8
@@ -165,16 +156,7 @@ public class MoviesStorage implements IMoviesStorage {
                 }*/
             }
         }
-        Map<String, Long> topKWordsSortedByCount = new LinkedHashMap<>();
-        Iterator<Entry<String, Long>> iterator = wordsCountMap.entrySet().iterator();
-        for (int i = 0 ; i < topK ; i++){
-            if (iterator.hasNext()){
-                Entry<String, Long> currEntry = iterator.next();
-                topKWordsSortedByCount.put(currEntry.getKey(), currEntry.getValue());
-            }
-        }
-        //System.out.println(wordsCountMap.get("the"));
-        return topKWordsSortedByCount;
+        return getKElementsFromMap(sortMapByValueAndKey(wordsCountMap), k);
     }
 
     @Override
@@ -206,23 +188,13 @@ public class MoviesStorage implements IMoviesStorage {
                 }*/
             }
         }
-        Map<String, Long> topKWordsSortedByCount = new LinkedHashMap<>();//TODO sorting
-        Iterator<Entry<String, Long>> iterator = wordsCountMap.entrySet().iterator();
-        for (int i = 0 ; i < k ; i++){
-            if (iterator.hasNext()){
-                Entry<String, Long> currEntry = iterator.next();
-                topKWordsSortedByCount.put(currEntry.getKey(), currEntry.getValue());
-            }
-        }
-        //System.out.println(wordsCountMap.get("the"));
-        return topKWordsSortedByCount;
+        return getKElementsFromMap(sortMapByValueAndKey(wordsCountMap), k);
     }
-
-
 
     @Override
     public Map<String, Double> topKHelpfullUsers(int k) {
         Map<String, Double> topKHelpfulUsers = new LinkedHashMap<>();
+
         return topKHelpfulUsers;
     }
 
@@ -258,7 +230,7 @@ public class MoviesStorage implements IMoviesStorage {
             @Override
             public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
                 if (o1.getValue().equals(o2.getValue())) {
-                    return o1.getKey().compareTo(o2.getKey()) * -1;
+                    return o1.getKey().compareTo(o2.getKey());
                 } else {
                     return o1.getValue().compareTo(o2.getValue()) * -1;
                 }
@@ -271,6 +243,17 @@ public class MoviesStorage implements IMoviesStorage {
         return result;
     }
 
+    private <K, V> Map<K, V> getKElementsFromMap(Map<K, V> map, int k) {
+        Map<K, V> topKEntriesMap = new LinkedHashMap<>();
+        Iterator<Entry<K, V>> iterator = map.entrySet().iterator();
+        for (int i = 0; i < k; i++) {
+            if (iterator.hasNext()) {
+                Entry<K, V> currEntry = iterator.next();
+                topKEntriesMap.put(currEntry.getKey(), currEntry.getValue());
+            }
+        }
+        return topKEntriesMap;
+    }
 
 }
 
