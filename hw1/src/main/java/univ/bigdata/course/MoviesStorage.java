@@ -6,7 +6,6 @@ import univ.bigdata.course.providers.MoviesProvider;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.stream.Stream;
 
 import static java.lang.Math.toIntExact;
 
@@ -26,16 +25,17 @@ import static java.lang.Math.toIntExact;
  */
 public class MoviesStorage implements IMoviesStorage {
     // Hashmap of movies, key is movie and value is a list of movie reviews for that movie
-    private HashMap <String, ArrayList<MovieReview>> reviewList;
+    // TODO(vak): change name to reviewMap
+    private Map <String, ArrayList<MovieReview>> reviewList;
     // Map with key movieId and value of number of reviews for that movie
     private List<Movie> moviesSortedByScore;
-    private Map<String, Long> moviesSortedByNumOfReviews; 
+    private Map<String, Long> moviesSortedByNumOfReviews;
     
     public Map<String, Long> getMoviesSortedByNumOfReviews() {
 		return moviesSortedByNumOfReviews;
 	}
 
-	public HashMap<String, ArrayList<MovieReview>> getReviewList() {
+	public Map<String, ArrayList<MovieReview>> getReviewList() {
 		return reviewList;
 	}
 
@@ -100,35 +100,32 @@ public class MoviesStorage implements IMoviesStorage {
 
     @Override
     public List<Movie> getMoviesPercentile(double percentile) {
-        List<Movie> moviesPercentile = new ArrayList<>();
+        int numOfMoviesToReturn = (int)Math.ceil((((100 -  percentile) / 100) * moviesSortedByScore.size()));
         if (moviesSortedByScore.isEmpty()){
             populateMoviesSortedByScore();
         }
-        for (Movie movie : moviesSortedByScore){
-            if (movie.getScore() < percentile){
-                break;
-            }
-            moviesPercentile.add(movie);
-        }
-        return moviesPercentile;
+        return moviesSortedByScore.subList(0, numOfMoviesToReturn);
     }
 
     @Override
     public String mostReviewedProduct() {
-    	if (moviesSortedByNumOfReviews.isEmpty()){
-    		populateMovieReviewCounts();
-        }
-
-        return (String) moviesSortedByNumOfReviews.keySet().toArray()[0]; 	
+        Map<String, Long> topKMoviesSortedByNumOfReviews = reviewCountPerMovieTopKMovies(1);
+        return topKMoviesSortedByNumOfReviews.keySet().iterator().next();
     }
 
     @Override
     public Map<String, Long> reviewCountPerMovieTopKMovies(int topK) {
-    	Map<String, Long> topKMoviesSortedByNumOfReviews = new LinkedHashMap<>();
     	if (moviesSortedByNumOfReviews.isEmpty()){
-    		populateMovieReviewCounts();
+            populateMovieReviewCounts();
         }
-    	// TODO retrun top K from the original Map to topK map
+        Map<String, Long> topKMoviesSortedByNumOfReviews = new LinkedHashMap<>();
+        Iterator<Entry<String, Long>> iterator = moviesSortedByNumOfReviews.entrySet().iterator();
+        for (int i = 0 ; i < topK ; i++){
+            if (iterator.hasNext()){
+                Entry<String, Long> currEntry = iterator.next();
+                topKMoviesSortedByNumOfReviews.put(currEntry.getKey(), currEntry.getValue());
+            }
+        }
     	return topKMoviesSortedByNumOfReviews;
     }
 
@@ -246,11 +243,33 @@ public class MoviesStorage implements IMoviesStorage {
     
     // method for populating the map of product id(of a movie) and the number of reviews of the movie
     private void populateMovieReviewCounts() {
-        for (Map.Entry<String, ArrayList<MovieReview>> entry : reviewList.entrySet()){
-        	moviesSortedByNumOfReviews.put(entry.getKey(), (long)entry.getValue().size() );
-        } 
-        /*TODO sort the Map by #(reviews) and by lex' order*/
+        Map<String, Long> unsortedMovieReviewCountsMap = new LinkedHashMap<>();
+        for (Map.Entry<String, ArrayList<MovieReview>> entry : reviewList.entrySet()) {
+            unsortedMovieReviewCountsMap.put(entry.getKey(), (long)entry.getValue().size());
+        }
+        moviesSortedByNumOfReviews = sortMapByValueAndKey(unsortedMovieReviewCountsMap);
     }
-    
-    
+
+    private static <K extends Comparable<K>, V extends Comparable<V>> Map<K, V> sortMapByValueAndKey(Map<K, V> map)
+    {
+        List<Map.Entry<K, V>> list = new LinkedList<>( map.entrySet() );
+        Collections.sort( list, new Comparator<Map.Entry<K, V>>() {
+            @Override
+            public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
+                if (o1.getValue().equals(o2.getValue())) {
+                    return o1.getKey().compareTo(o2.getKey()) * -1;
+                } else {
+                    return o1.getValue().compareTo(o2.getValue()) * -1;
+                }
+            }
+        });
+        Map<K, V> result = new LinkedHashMap<>();
+        for (Map.Entry<K, V> entry : list) {
+            result.put( entry.getKey(), entry.getValue() );
+        }
+        return result;
+    }
+
+
 }
+
