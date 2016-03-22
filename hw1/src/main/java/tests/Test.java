@@ -29,13 +29,14 @@ public class Test {
 	}
 	
 	public void checkFunction2point6(){
-		storage.mostReviewedProduct();
+		String ans = storage.mostReviewedProduct();
 		Map<String, Long> moviesSortedByNumOfReviews = storage.getMoviesSortedByNumOfReviews();
 		System.out.println("movies sorted by number of reviews:");
 		for (Map.Entry<String, Long> entry : moviesSortedByNumOfReviews.entrySet()){
 			System.out.println(entry.getKey() + " " + entry.getValue());
         }
-		System.out.println("first item id: " + moviesSortedByNumOfReviews.keySet().toArray()[0] );
-		System.out.println("first item val: " + moviesSortedByNumOfReviews.values().toArray()[0] );
+		System.out.println(ans);
+		//System.out.println("first item id: " + moviesSortedByNumOfReviews.keySet().toArray()[0] );
+		//System.out.println("first item val: " + moviesSortedByNumOfReviews.values().toArray()[0] );
 	}
 }
