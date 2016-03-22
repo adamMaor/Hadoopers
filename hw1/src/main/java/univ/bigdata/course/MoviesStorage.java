@@ -109,11 +109,7 @@ public class MoviesStorage implements IMoviesStorage {
 
     @Override
     public String mostReviewedProduct() {
-    	if (moviesSortedByNumOfReviews.isEmpty()){
-    		populateMovieReviewCounts();
-        }
         Map<String, Long> topKMoviesSortedByNumOfReviews = reviewCountPerMovieTopKMovies(1);
-        //topKMoviesSortedByNumOfReviews.keySet().iterator().next();
         return topKMoviesSortedByNumOfReviews.keySet().iterator().next();
     }
 
@@ -122,9 +118,7 @@ public class MoviesStorage implements IMoviesStorage {
     	if (moviesSortedByNumOfReviews.isEmpty()){
             populateMovieReviewCounts();
         }
-
-        // TODO retrun top K from the original Map to topK map
-        Map<String, Long> topKMoviesSortedByNumOfReviews = new LinkedHashMap<String, Long>();
+        Map<String, Long> topKMoviesSortedByNumOfReviews = new LinkedHashMap<>();
         Iterator<Entry<String, Long>> iterator = moviesSortedByNumOfReviews.entrySet().iterator();
         for (int i = 0 ; i < topK ; i++){
             if (iterator.hasNext()){
@@ -174,10 +168,10 @@ public class MoviesStorage implements IMoviesStorage {
     // method for populating the map of product id(of a movie) and the number of reviews of the movie
     private void populateMovieReviewCounts() {
         Map<String, Long> tempMap = new HashMap<String, Long>();
-        for (Map.Entry<String, ArrayList<MovieReview>> entry : reviewList.entrySet()){
+        for (Map.Entry<String, ArrayList<MovieReview>> entry : reviewList.entrySet()) {
             tempMap.put(entry.getKey(), (long)entry.getValue().size() );
         }
-        List<Map.Entry<String, Long>> sortedList = new ArrayList<Map.Entry<String, Long>>(tempMap.entrySet());
+        List<Map.Entry<String, Long>> sortedList = new ArrayList<>(tempMap.entrySet());
         Collections.sort(sortedList, new Comparator<Entry<String, Long>>() {
             @Override
             public int compare(Entry<String, Long> e1, Entry<String, Long> e2) {
@@ -188,12 +182,9 @@ public class MoviesStorage implements IMoviesStorage {
                 return compareByReviews * -1;
             }
         });
-        // TODO retrun top K from the original Map to topK map
-        for (int i = 0 ; i < sortedList.size() ; i++){
+        for (int i = 0 ; i < sortedList.size() ; i++) {
             moviesSortedByNumOfReviews.put(sortedList.get(i).getKey(), (sortedList.get(i).getValue()));
         }
-
-        /*TODO sort the Map by #(reviews) and by lex' order*/
     }
     
     
