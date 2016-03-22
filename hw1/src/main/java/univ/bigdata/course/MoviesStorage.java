@@ -99,17 +99,11 @@ public class MoviesStorage implements IMoviesStorage {
 
     @Override
     public List<Movie> getMoviesPercentile(double percentile) {
-        List<Movie> moviesPercentile = new ArrayList<>();
+        int numOfMoviesToReturn = (int)Math.ceil((((100 -  percentile) / 100) * moviesSortedByScore.size()));
         if (moviesSortedByScore.isEmpty()){
             populateMoviesSortedByScore();
         }
-        for (Movie movie : moviesSortedByScore){
-            if (movie.getScore() < percentile){
-                break;
-            }
-            moviesPercentile.add(movie);
-        }
-        return moviesPercentile;
+        return moviesSortedByScore.subList(0, numOfMoviesToReturn);
     }
 
     @Override
