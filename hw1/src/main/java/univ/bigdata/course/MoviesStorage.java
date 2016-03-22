@@ -29,7 +29,7 @@ public class MoviesStorage implements IMoviesStorage {
     // Map with key movieId and value of number of reviews for that movie
     private List<Movie> moviesSortedByScore;
     private Map<String, Long> moviesSortedByNumOfReviews;
-    
+
     public Map<String, Long> getMoviesSortedByNumOfReviews() {
 		return moviesSortedByNumOfReviews;
 	}
@@ -192,10 +192,28 @@ public class MoviesStorage implements IMoviesStorage {
     }
 
     @Override
-    public Map<String, Double> topKHelpfullUsers(int k) {
-        Map<String, Double> topKHelpfulUsers = new LinkedHashMap<>();
-
-        return topKHelpfulUsers;
+    public Map<String, Double> topKHelpfullUsers(int topK) {
+        Map<String, Long> helpfulOpinionsSum = new HashMap<>();
+        Map<String, Long> totalOpinionsSum = new HashMap<>();
+        Map<String, Double> usersHelpfulnessMap = new LinkedHashMap<>();
+        for (Map.Entry<String, ArrayList<MovieReview>> reviewEntry : reviewMap.entrySet()){
+            for(MovieReview review: reviewEntry.getValue()) {
+                helpfulOpinionsSum.putIfAbsent(review.getUserId(), (long) 0);
+                totalOpinionsSum.putIfAbsent(review.getUserId(), (long) 0);
+                String helpfulness = review.getHelpfulness();
+                long helpfulOpinions = Long.parseLong(helpfulness.substring(0, helpfulness.lastIndexOf("/")));
+                long totalOpinions = Long.parseLong(helpfulness.substring(helpfulness.lastIndexOf("/") + 1, helpfulness.length()));
+                helpfulOpinionsSum.put(review.getUserId(), helpfulOpinionsSum.get(review.getUserId()) + helpfulOpinions);
+                totalOpinionsSum.put(review.getUserId(), totalOpinionsSum.get(review.getUserId()) + totalOpinions);
+            }
+        }
+        helpfulOpinionsSum.keySet().stream()
+                .filter(user -> totalOpinionsSum.get(user) != 0)
+                .forEach(user -> {
+            double avg = (double) helpfulOpinionsSum.get(user) / totalOpinionsSum.get(user);
+            usersHelpfulnessMap.put(user, (double)Math.round(avg * 100000d) / 100000d);
+        });
+        return getKElementsFromMap(sortMapByValueAndKey(usersHelpfulnessMap), topK);
     }
 
     @Override
@@ -223,6 +241,7 @@ public class MoviesStorage implements IMoviesStorage {
         moviesSortedByNumOfReviews = sortMapByValueAndKey(unsortedMovieReviewCountsMap);
     }
 
+    // generic method for reverse sorting map by value, if value equals then by key
     private static <K extends Comparable<K>, V extends Comparable<V>> Map<K, V> sortMapByValueAndKey(Map<K, V> map)
     {
         List<Map.Entry<K, V>> list = new LinkedList<>( map.entrySet() );
@@ -243,6 +262,7 @@ public class MoviesStorage implements IMoviesStorage {
         return result;
     }
 
+    // generic method for getting first k entries from map to new map
     private <K, V> Map<K, V> getKElementsFromMap(Map<K, V> map, int k) {
         Map<K, V> topKEntriesMap = new LinkedHashMap<>();
         Iterator<Entry<K, V>> iterator = map.entrySet().iterator();
@@ -254,6 +274,5 @@ public class MoviesStorage implements IMoviesStorage {
         }
         return topKEntriesMap;
     }
-
 }
 
