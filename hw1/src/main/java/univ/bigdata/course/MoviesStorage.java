@@ -156,7 +156,7 @@ public class MoviesStorage implements IMoviesStorage {
                 }*/
             }
         }
-        return getKElementsFromMap(sortMapByValueAndKey(wordsCountMap), k);
+        return getKElementsFromMap(sortMapByValueAndKey(wordsCountMap), topK);
     }
 
     @Override
@@ -170,7 +170,7 @@ public class MoviesStorage implements IMoviesStorage {
         return countWordsInGivenMovies(topYMovieMap, topWords);
     }
 
-    private Map<String,Long> countWordsInGivenMovies(HashMap<String, ArrayList<MovieReview>> movieMap, int k) {
+    private Map<String,Long> countWordsInGivenMovies(HashMap<String, ArrayList<MovieReview>> movieMap, int topK) {
         Map<String, Long> wordsCountMap = new LinkedHashMap<>();
         for (Map.Entry<String, ArrayList<MovieReview>> entry : movieMap.entrySet()){
             for(MovieReview review: entry.getValue()){
@@ -188,7 +188,7 @@ public class MoviesStorage implements IMoviesStorage {
                 }*/
             }
         }
-        return getKElementsFromMap(sortMapByValueAndKey(wordsCountMap), k);
+        return getKElementsFromMap(sortMapByValueAndKey(wordsCountMap), topK);
     }
 
     @Override
