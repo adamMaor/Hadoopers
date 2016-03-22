@@ -211,7 +211,10 @@ public class MoviesStorage implements IMoviesStorage {
     private void populateMoviesSortedByScore() {
         Set<String> movies = reviewMap.keySet();
         for (String movieId : movies){
-            Movie movie = new Movie(movieId, totalMovieAverage(movieId));
+            double avg = totalMovieAverage(movieId);
+            avg = (double)Math.round(avg * 100000d) / 100000d;
+
+            Movie movie = new Movie(movieId, avg);
             moviesSortedByScore.add(movie);
         }
         Collections.sort(moviesSortedByScore);
