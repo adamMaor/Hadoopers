@@ -51,7 +51,7 @@ public class FileIOMoviesProvider implements MoviesProvider {
         }
         // We've finished reading the next currentLine, reader can continue
         readLineFlag = false;
-        String[] reviewParamsList = currentLine.split("\t");
+        String[] reviewParamsList = currentLine.split("\\t");
         for (int i = 0; i < reviewParamsList.length; i++){
             reviewParamsList[i] = reviewParamsList[i].substring(reviewParamsList[i].lastIndexOf(":") + 2);
         }
