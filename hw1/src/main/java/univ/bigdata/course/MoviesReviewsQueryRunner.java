@@ -24,12 +24,12 @@ public class MoviesReviewsQueryRunner {
         String outputFile = args[1].substring(args[1].indexOf("=") + 1);
 
         /*TO CHANGE : use args[2] as out stream !!!*/
-        final PrintStream printer = new PrintStream("./" + outputFile);
+        final PrintStream printer = new PrintStream(outputFile);
         // final PrintStream printer = new PrintStream(args[1]);
 
         try{
 //            final MoviesProvider provider = new FileIOMoviesProvider(".\\hw1\\src\\main\\resources\\movies-sample.txt");
-            final MoviesProvider provider = new FileIOMoviesProvider("./src/main/resources/" + inputFile);
+            final MoviesProvider provider = new FileIOMoviesProvider(inputFile);
 
 
             final IMoviesStorage storage = new MoviesStorage(provider);
