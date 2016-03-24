@@ -5,6 +5,7 @@ import univ.bigdata.course.movie.MovieReview;
 import univ.bigdata.course.providers.FileIOMoviesProvider;
 import univ.bigdata.course.providers.MoviesProvider;
 
+import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
@@ -15,15 +16,22 @@ import tests.Test;
 
 public class MoviesReviewsQueryRunner {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
 
         //TODO: Here you need to add the part of reading input parameters
         // opening stream for writing the output and validating.
+        String inputFile = args[0].substring(args[0].indexOf("=") + 1);
+        String outputFile = args[1].substring(args[1].indexOf("=") + 1);
 
         /*TO CHANGE : use args[2] as out stream !!!*/
-        final PrintStream printer = new PrintStream((OutputStream)(System.out));
+        final PrintStream printer = new PrintStream("./" + outputFile);
+        // final PrintStream printer = new PrintStream(args[1]);
+
         try{
-            final MoviesProvider provider = new FileIOMoviesProvider(".\\hw1\\src\\main\\resources\\movies-sample.txt");
+//            final MoviesProvider provider = new FileIOMoviesProvider(".\\hw1\\src\\main\\resources\\movies-sample.txt");
+            final MoviesProvider provider = new FileIOMoviesProvider("./src/main/resources/" + inputFile);
+
+
             final IMoviesStorage storage = new MoviesStorage(provider);
 
 

@@ -1,0 +1,9 @@
+univ/bigdata/course/movie/Movie.class
+tests/Test.class
+univ/bigdata/course/MoviesStorage$1.class
+univ/bigdata/course/IMoviesStorage.class
+univ/bigdata/course/MoviesReviewsQueryRunner.class
+univ/bigdata/course/providers/MoviesProvider.class
+univ/bigdata/course/providers/FileIOMoviesProvider.class
+univ/bigdata/course/MoviesStorage.class
+univ/bigdata/course/movie/MovieReview.class
