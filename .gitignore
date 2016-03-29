@@ -54,3 +54,17 @@ Temporary Items
 .idea/uiDesigner.xml
 *.class
 *.iml
+.vagrant/machines/default/virtualbox/action_provision
+.vagrant/machines/default/virtualbox/action_set_name
+.vagrant/machines/default/virtualbox/creator_uid
+.vagrant/machines/default/virtualbox/synced_folders
+.vagrant/machines/default/virtualbox/action_set_name
+.vagrant/machines/default/virtualbox/creator_uid
+.vagrant/machines/default/virtualbox/id
+.vagrant/machines/default/virtualbox/index_uuid
+.vagrant/machines/default/virtualbox/private_key
+.vagrant/machines/default/virtualbox/synced_folders
+hw1/target/classes/queries_out.txt
+*.class
+hw1/target/hw1-1.0-SNAPSHOT.jar
+*.properties
