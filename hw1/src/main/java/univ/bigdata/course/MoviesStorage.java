@@ -63,7 +63,8 @@ public class MoviesStorage implements IMoviesStorage {
                 count++;
             }
         }
-        return (double)sum/count;
+        double avg = (double)Math.round((sum/count) * 100000d) / 100000d;
+        return avg;
     }
 
     //2.2
@@ -75,7 +76,8 @@ public class MoviesStorage implements IMoviesStorage {
             sum += review.getMovie().getScore();
             count++;
         }
-        return (double)sum/count;
+        double avg = (double)Math.round((sum/count) * 100000d) / 100000d;
+        return avg;
     }
 
     //2.3
