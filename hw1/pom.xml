@@ -47,8 +47,8 @@
         <configuration>
           <mainClass>univ.bigdata.course.MoviesReviewsQueryRunner</mainClass>
           <arguments>
-            <argument>-inputFile=./src/main/resources/movies-sample.txt</argument>
-            <argument>-outputFile=./queries_out.txt</argument>
+            <argument>-inputFile=movies-sample.txt</argument>
+            <argument>-outputFile=queries_out.txt</argument>
           </arguments>
         </configuration>
         <dependencies>

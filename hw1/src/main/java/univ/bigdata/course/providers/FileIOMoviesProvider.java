@@ -3,79 +3,64 @@ package univ.bigdata.course.providers;
 import univ.bigdata.course.movie.Movie;
 import univ.bigdata.course.movie.MovieReview;
 
-import java.io.FileReader;
-import java.io.LineNumberReader;
+import java.io.*;
 import java.util.Date;
+import java.util.Scanner;
 
 public class FileIOMoviesProvider implements MoviesProvider {
-    private final LineNumberReader lineNumberReader;
     // flag to tell if we've read the current line
     private boolean readLineFlag;
     // the line most recently read from file
     private String currentLine;
+    // Scanner to read file
+    private Scanner inputScanner;
     /**
      * Constructor function for FileIOMoviesProvider
      * @param inputFileStr the input file
      */
     public FileIOMoviesProvider(String inputFileStr) {
-        readLineFlag = false;
-        try{
-            lineNumberReader = new LineNumberReader(new FileReader(inputFileStr));
-        } catch (Exception e){
-            throw new RuntimeException("File open error");
+        // Get file from resources folder
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource(inputFileStr).getFile());
+        inputScanner = null;
+        if (file.exists()) {
+            try {
+                inputScanner = new Scanner(file);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException("File open error");
+            }
         }
     }
 
     @Override
     public boolean hasMovie() {
-        if (!readLineFlag) {
-            readNextLine();
-        }
-        if (currentLine == null){
-            try{
-                lineNumberReader.close();
-            } catch (Exception e){
-                throw new RuntimeException("Can't close reader");
-            }
+        if (!inputScanner.hasNextLine()){
+            inputScanner.close();
             return false;
         }
-        else {
-            return true;
-        }
+        return true;
     }
 
     @Override
     public MovieReview getMovie() {
-        if (!readLineFlag) {
-            readNextLine();
+        if (hasMovie()) {
+            currentLine = inputScanner.nextLine();
+            String[] reviewParamsList = currentLine.split("\\t");
+            for (int i = 0; i < reviewParamsList.length; i++){
+                reviewParamsList[i] = reviewParamsList[i].substring(reviewParamsList[i].indexOf(":") + 2);
+            }
+            Movie movie = new Movie(reviewParamsList[0], Double.parseDouble(reviewParamsList[4]));
+            Date movieDate = new Date(Long.parseLong(reviewParamsList[5]));
+            return new MovieReview(movie,
+                    reviewParamsList[1],
+                    reviewParamsList[2],
+                    reviewParamsList[3],
+                    movieDate,
+                    reviewParamsList[6],
+                    reviewParamsList[7]);
         }
-        // We've finished reading the next currentLine, reader can continue
-        readLineFlag = false;
-        String[] reviewParamsList = currentLine.split("\\t");
-        for (int i = 0; i < reviewParamsList.length; i++){
-            reviewParamsList[i] = reviewParamsList[i].substring(reviewParamsList[i].indexOf(":") + 2);
-        }
-        Movie movie = new Movie(reviewParamsList[0], Double.parseDouble(reviewParamsList[4]));
-        Date movieDate = new Date(Long.parseLong(reviewParamsList[5]));
-        return new MovieReview(movie,
-                reviewParamsList[1],
-                reviewParamsList[2],
-                reviewParamsList[3],
-                movieDate,
-                reviewParamsList[6],
-                reviewParamsList[7]);
-    }
-
-    /**
-     * read the nextLineNumber currentLine from LineNumberReader
-     */
-    private void readNextLine(){
-        try {
-            currentLine = lineNumberReader.readLine();
-            // We've read the current currentLine, reader should not continue reading until getMovie has been called
-            readLineFlag = true;
-        } catch (Exception e){
-            throw new RuntimeException("Can't read current currentLine");
+        else {
+            throw new RuntimeException("Illegal read from file");
         }
     }
 }

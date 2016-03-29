@@ -19,13 +19,19 @@ public class MoviesReviewsQueryRunner {
         //TODO: Here you need to add the part of reading input parameters
         // opening stream for writing the output and validating.
 
-        String outputFile = args[1].substring(args[1].indexOf("=") + 1);
-        final PrintStream printer = new PrintStream(outputFile);
-        // final PrintStream printer = new PrintStream(args[1]);
+        String outputFile = "";
+        String inputFile = "";
+        for (int i = 0; i < args.length; i++){
+            if (args[i].contains("inputFile")){
+                inputFile = args[i].substring(args[i].indexOf("=") + 1);
+            }
+            else if (args[i].contains("outputFile")){
+                outputFile = args[i].substring(args[i].indexOf("=") + 1);
+            }
+        }
+        final PrintStream printer =  new PrintStream(outputFile);
 
         try{
-//            final MoviesProvider provider = new FileIOMoviesProvider(".\\hw1\\src\\main\\resources\\movies-sample.txt");
-            String inputFile = args[0].substring(args[0].indexOf("=") + 1);
             final MoviesProvider provider = new FileIOMoviesProvider(inputFile);
             final IMoviesStorage storage = new MoviesStorage(provider);
 
