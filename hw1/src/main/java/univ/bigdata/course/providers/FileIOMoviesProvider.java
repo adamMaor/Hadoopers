@@ -10,8 +10,6 @@ import java.util.Scanner;
 public class FileIOMoviesProvider implements MoviesProvider {
     // flag to tell if we've read the current line
     private boolean readLineFlag;
-    // the line most recently read from file
-    private String currentLine;
     // Scanner to read file
     private Scanner inputScanner;
     /**
@@ -44,7 +42,7 @@ public class FileIOMoviesProvider implements MoviesProvider {
     @Override
     public MovieReview getMovie() {
         if (hasMovie()) {
-            currentLine = inputScanner.nextLine();
+            String currentLine = inputScanner.nextLine();
             String[] reviewParamsList = currentLine.split("\\t");
             for (int i = 0; i < reviewParamsList.length; i++){
                 reviewParamsList[i] = reviewParamsList[i].substring(reviewParamsList[i].indexOf(":") + 2);
