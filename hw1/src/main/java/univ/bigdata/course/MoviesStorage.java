@@ -74,10 +74,6 @@ public class MoviesStorage implements IMoviesStorage {
         return roundFiveDecimal((double)sum/count);
     }
 
-    private double roundFiveDecimal(double number)
-    {
-        return (double)Math.round((number) * 100000d) / 100000d;
-    }
     //2.3
     @Override
     public List<Movie> getTopKMoviesAverage(long topK) {
@@ -257,6 +253,16 @@ public class MoviesStorage implements IMoviesStorage {
             }
         }
         return topKEntriesMap;
+    }
+
+    /**
+     * This service method rounds a double to 5 decimal digits
+     * @param number number to format
+     * @return rounded double with 5 decimal points
+     */
+    private double roundFiveDecimal(double number)
+    {
+        return (double)Math.round((number) * 100000d) / 100000d;
     }
 }
 
