@@ -23,7 +23,9 @@ public class MoviesReviewsQueryRunner {
         String inputFile = "";
         for (int i = 0; i < args.length; i++){
             if (args[i].contains("inputFile")){
-                inputFile = args[i].substring(args[i].indexOf("=") + 1);
+                String inputFileName = args[i].substring(args[i].indexOf("=") + 1);
+                ClassLoader classLoader = MoviesReviewsQueryRunner.class.getClassLoader();
+                inputFile = classLoader.getResource(inputFileName).getFile();
             }
             else if (args[i].contains("outputFile")){
                 outputFile = args[i].substring(args[i].indexOf("=") + 1);

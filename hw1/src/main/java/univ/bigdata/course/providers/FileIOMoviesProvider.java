@@ -21,7 +21,7 @@ public class FileIOMoviesProvider implements MoviesProvider {
     public FileIOMoviesProvider(String inputFileStr) {
         // Get file from resources folder
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource(inputFileStr).getFile());
+        File file = new File(inputFileStr);
         inputScanner = null;
         if (file.exists()) {
             try {
