@@ -12,28 +12,22 @@ import java.util.ArrayList;
 import java.io.PrintStream;
 import java.util.List;
 
-import tests.Test;
-
 public class MoviesReviewsQueryRunner {
 
     public static void main(String[] args) throws FileNotFoundException {
 
         //TODO: Here you need to add the part of reading input parameters
         // opening stream for writing the output and validating.
-        String inputFile = args[0].substring(args[0].indexOf("=") + 1);
-        String outputFile = args[1].substring(args[1].indexOf("=") + 1);
 
-        /*TO CHANGE : use args[2] as out stream !!!*/
+        String outputFile = args[1].substring(args[1].indexOf("=") + 1);
         final PrintStream printer = new PrintStream(outputFile);
         // final PrintStream printer = new PrintStream(args[1]);
 
         try{
 //            final MoviesProvider provider = new FileIOMoviesProvider(".\\hw1\\src\\main\\resources\\movies-sample.txt");
+            String inputFile = args[0].substring(args[0].indexOf("=") + 1);
             final MoviesProvider provider = new FileIOMoviesProvider(inputFile);
-
-
             final IMoviesStorage storage = new MoviesStorage(provider);
-
 
             printer.println("Getting list of total movies average.");
             // 1.

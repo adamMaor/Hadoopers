@@ -30,10 +30,6 @@ public class MoviesStorage implements IMoviesStorage {
     private List<Movie> moviesSortedByScore;
     private Map<String, Long> moviesSortedByNumOfReviews;
 
-    public Map<String, Long> getMoviesSortedByNumOfReviews() {
-		return moviesSortedByNumOfReviews;
-	}
-
 	public MoviesStorage(final MoviesProvider provider) {
         this.reviewMap = new HashMap<>();
         this.moviesSortedByScore = new ArrayList<>();
@@ -63,8 +59,7 @@ public class MoviesStorage implements IMoviesStorage {
                 count++;
             }
         }
-        double avg = (double)Math.round((sum/count) * 100000d) / 100000d;
-        return avg;
+        return roundFiveDecimal((double)sum/count);
     }
 
     //2.2
@@ -76,10 +71,13 @@ public class MoviesStorage implements IMoviesStorage {
             sum += review.getMovie().getScore();
             count++;
         }
-        double avg = (double)Math.round((sum/count) * 100000d) / 100000d;
-        return avg;
+        return roundFiveDecimal((double)sum/count);
     }
 
+    private double roundFiveDecimal(double number)
+    {
+        return (double)Math.round((number) * 100000d) / 100000d;
+    }
     //2.3
     @Override
     public List<Movie> getTopKMoviesAverage(long topK) {
@@ -141,7 +139,8 @@ public class MoviesStorage implements IMoviesStorage {
 
     //2.9
     @Override
-    public Map<String, Long> moviesReviewWordsCount(int topK) {
+    public Map<String, Long> moviesReviewWordsCount(int topK)
+    {
         return countWordsInGivenMovies(reviewMap, topK);
     }
 
@@ -156,19 +155,13 @@ public class MoviesStorage implements IMoviesStorage {
         return countWordsInGivenMovies(topYMovieMap, topWords);
     }
 
-    //used by 2.10 and 2.9 querys. count all words in a map of movies reviews.
+    //used by 2.10 and 2.9 queries. count all words in a map of movies reviews.
     private Map<String,Long> countWordsInGivenMovies(Map<String, List<MovieReview>> movieMap, int topK) {
-        int x = 0;
         Map<String, Long> wordsCountMap = new LinkedHashMap<>();
         for (List<MovieReview> movieReviews : movieMap.values()) {
             for(MovieReview review : movieReviews) {
                 String[] words = review.getReview().split("\\s");
-//                words[0] = words[0].replaceAll("[\"]","");
-//                words[words.length-1] = words[words.length-1].replaceAll("[\"]","");
                 for (String word : words) {
-                    if(word.contains("original")) {
-                        x++;
-                    }
                     wordsCountMap.putIfAbsent(word, (long) 0);
                     wordsCountMap.put(word, wordsCountMap.get(word) + 1);
                 }
@@ -198,14 +191,16 @@ public class MoviesStorage implements IMoviesStorage {
                 .filter(user -> totalOpinionsSum.get(user) != 0)
                 .forEach(user -> {
             double avg = (double) helpfulOpinionsSum.get(user) / totalOpinionsSum.get(user);
-            usersHelpfulnessMap.put(user, (double)Math.round(avg * 100000d) / 100000d);
+
+            usersHelpfulnessMap.put(user, roundFiveDecimal(avg));
         });
         return getKElementsFromMap(sortMapByValueAndKey(usersHelpfulnessMap), topK);
     }
 
     //2.12
     @Override
-    public long moviesCount() {
+    public long moviesCount()
+    {
         return reviewMap.size();
     }
 
@@ -214,9 +209,7 @@ public class MoviesStorage implements IMoviesStorage {
         Set<String> movies = reviewMap.keySet();
         for (String movieId : movies){
             double avg = totalMovieAverage(movieId);
-            avg = (double)Math.round(avg * 100000d) / 100000d;
-
-            Movie movie = new Movie(movieId, avg);
+            Movie movie = new Movie(movieId, roundFiveDecimal(avg));
             moviesSortedByScore.add(movie);
         }
         Collections.sort(moviesSortedByScore);
