@@ -3,40 +3,37 @@ package univ.bigdata.course.providers;
 import univ.bigdata.course.movie.Movie;
 import univ.bigdata.course.movie.MovieReview;
 
-import java.io.*;
+import java.io.File;
 import java.util.Date;
 import java.util.Scanner;
 
 public class FileIOMoviesProvider implements MoviesProvider {
-    // flag to tell if we've read the current line
-    private boolean readLineFlag;
     // Scanner to read file
-    private Scanner inputScanner;
+    private final Scanner inputScanner;
     /**
      * Constructor function for FileIOMoviesProvider
-     * @param inputFileStr the input file
+     * @param inputFileStr the input file path
      */
     public FileIOMoviesProvider(String inputFileStr) {
-        // Get file from resources folder
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(inputFileStr);
-        inputScanner = null;
-        if (file.exists()) {
-            try {
-                inputScanner = new Scanner(file);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException("File open error");
-            }
+        try {
+            File file = new File(inputFileStr);
+            inputScanner = new Scanner(file);
+        } catch (Exception e) {
+            throw new RuntimeException("File open error");
         }
     }
 
     @Override
     public boolean hasMovie() {
-        if (!inputScanner.hasNextLine()){
-            inputScanner.close();
+        try {
+            if (!inputScanner.hasNextLine()){
+                inputScanner.close();
+                return false;
+            }
+            return true;
+        } catch (IllegalStateException e) {
             return false;
         }
-        return true;
     }
 
     @Override
