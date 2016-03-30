@@ -1,37 +1,35 @@
 package univ.bigdata.course;
 
-import univ.bigdata.course.movie.Movie;
-import univ.bigdata.course.movie.MovieReview;
 import univ.bigdata.course.providers.FileIOMoviesProvider;
 import univ.bigdata.course.providers.MoviesProvider;
-
 import java.io.FileNotFoundException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-
 import java.io.PrintStream;
-import java.util.List;
+import java.net.URL;
 
 public class MoviesReviewsQueryRunner {
 
-    public static void main(String[] args) throws FileNotFoundException {
-
-        //TODO: Here you need to add the part of reading input parameters
-        // opening stream for writing the output and validating.
+    public static void main(String[] args){
 
         String outputFile = "";
         String inputFile = "";
+        // Go over arguments (set in pom.xml) and find our input and output files
         for (int i = 0; i < args.length; i++){
             if (args[i].contains("inputFile")){
                 String inputFileName = args[i].substring(args[i].indexOf("=") + 1);
+                // get the file full path from resources - actually the target
                 ClassLoader classLoader = MoviesReviewsQueryRunner.class.getClassLoader();
-                inputFile = classLoader.getResource(inputFileName).getFile();
+                URL fileURL = classLoader.getResource(inputFileName);
+                if (fileURL == null) {
+                    throw new RuntimeException("Input file open error");
+                }
+                inputFile = fileURL.getFile();
             }
             else if (args[i].contains("outputFile")){
                 outputFile = args[i].substring(args[i].indexOf("=") + 1);
             }
         }
-        final PrintStream printer =  new PrintStream(outputFile);
+        // init. printer
+        final PrintStream printer = initPrinter(outputFile);
 
         try{
             final MoviesProvider provider = new FileIOMoviesProvider(inputFile);
@@ -121,5 +119,21 @@ public class MoviesReviewsQueryRunner {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * this static method initializes the printer.
+     * it handles the FileNotFoundException
+     * @param outputFile - the file to write to
+     * @return the initialized printer
+     */
+    private static PrintStream initPrinter(String outputFile) {
+        PrintStream printer = null;
+        try {
+            printer = new PrintStream(outputFile);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Output file open error");
+        }
+        return printer;
     }
 }

@@ -68,3 +68,4 @@ hw1/target/classes/queries_out.txt
 *.class
 hw1/target/hw1-1.0-SNAPSHOT.jar
 *.properties
+*.class
